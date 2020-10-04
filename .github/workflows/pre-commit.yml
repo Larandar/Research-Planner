@@ -1,0 +1,21 @@
+name: pre-commit
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    # Install Luacheck for pre-commit
+    - uses: leafo/gh-actions-lua@v5
+    - uses: leafo/gh-actions-luarocks@v2
+    - name: Install luacheck
+      run: luarocks install luacheck
+
+    # Run pre-commit
+    - uses: actions/setup-python@v2
+    - uses: pre-commit/action@v2.0.0
