@@ -1,0 +1,9 @@
+---------------------------------------------------------------------------------------------------
+Version: 0.1.0
+Date: 2020-10-11
+
+  Features:
+    - Mod setting for changing research queue setting
+    - Notification for finished researches
+    - Setting for who research notifications are shared with
+    - WIP setting for auto planning next research (only first-found for the moment)
