@@ -10,14 +10,14 @@ This mod intent to enhance your research queue experience.
 
 ## Planned features:
 
-- Target a research an bee-line to it
+- Target a research and bee-line to it
 - Auto-add least expensive research
 - Production adaptive research?
 - Infinite research prioritization
 
 ## Compatibility:
 
-In theory any research added should be compatible
+In theory, any research added should be compatible
 
 ## Mod inspirations:
 
