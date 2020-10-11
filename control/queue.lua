@@ -47,4 +47,48 @@ end
 Event.register(defines.events.on_rocket_launched,
                ResearchQueue.DefaultUnlockBehaviour)
 
+function ResearchQueue.NotifyResearchFinished(event)
+    -- Only trigger on correct events
+    if not (event and event.define_name == "on_research_finished") then
+        return
+    end
+
+    local research = event.research
+    local force = Game.get_force(event.research.force)
+    local sharing_setting = settings.global["research-planner-sharing"].value
+
+    for _, other_force in pairs(game.forces) do
+        if force.name == other_force.name then
+            other_force.print {
+                "messages.research-finished-self", force.name, research.name,
+                research.localised_name
+            }
+
+        elseif force.get_friend(other_force) then
+            if not sharing_setting == "no" then
+                other_force.print {
+                    "messages.research-finished-friend", force.name,
+                    research.name, research.localised_name
+                }
+            end
+
+        elseif not force.get_friend(other_force) then
+            if sharing_setting == "always" then
+                other_force.print {
+                    "messages.research-finished-enemy", force.name,
+                    research.name, research.localised_name
+                }
+            elseif sharing_setting == "secret-to-enemies" then
+                local ingredients = research.research_unit_ingredients
+                other_force.print {
+                    "messages.research-finished-enemy-secret", force.name,
+                    research.research_unit_count, ingredients[#ingredients].name
+                }
+            end
+        end
+    end
+end
+Event.register(defines.events.on_research_finished,
+               ResearchQueue.NotifyResearchFinished)
+
 return ResearchQueue
