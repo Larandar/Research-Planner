@@ -12,6 +12,7 @@ This mod intent to enhance your research queue experience.
 
 - Runtime setting for trying the future planning strategy
   - First-found: get the first research found that is researchable
+  - Cheapest: plan the research with cheapest combined crafting time
 
 ## Planned features:
 

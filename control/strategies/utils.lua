@@ -1,3 +1,6 @@
+-- Standard Lib for factorio: https://afforess.github.io/Factorio-Stdlib/
+local table = require("__stdlib__/stdlib/utils/table")
+
 local StrategyUtils = {}
 
 -- Return if a tech can be researched now
@@ -9,6 +12,11 @@ function StrategyUtils.is_researchable(tech)
         if not prereq.researched then return false end
     end
     return true
+end
+
+-- Return a copy of the research table fitered for researchable techs only
+function StrategyUtils.filter_researchable(techs)
+    return table.filter(techs, StrategyUtils.is_researchable)
 end
 
 return StrategyUtils

@@ -3,7 +3,10 @@ local Event = require('__stdlib__/stdlib/event/event')
 local Game = require("__stdlib__/stdlib/game")
 
 -- Stategies
-local Strategies = {["first-found"] = require("control/strategies/first-found")}
+local Strategies = {
+    ["cheapest"] = require("control/strategies/cheapest"),
+    ["first-found"] = require("control/strategies/first-found")
+}
 
 local Planner = {}
 
