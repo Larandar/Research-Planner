@@ -2,13 +2,12 @@
 local Event = require('__stdlib__/stdlib/event/event')
 local Game = require("__stdlib__/stdlib/game")
 
--- Stategies
-local Strategies = {
-    ["cheapest"] = require("control/strategies/cheapest"),
-    ["first-found"] = require("control/strategies/first-found")
-}
-
+local PlanningStrategy = require("control/strategy")
 local Planner = {}
+
+-- FIXME: ULTRA WIP
+local current_strategy = PlanningStrategy:new()
+local force_plan = {}
 
 function Planner.FinishedResearch(event)
     -- Only trigger on correct events
@@ -19,20 +18,10 @@ function Planner.FinishedResearch(event)
     local force = Game.get_force(event.research.force)
     if not force.current_research == nil then return end
 
-    local planning_strategy =
-        settings.global["research-planner-wip-planning-strategy"].value
-    if planning_strategy == "no" then return end
-
-    if Strategies[planning_strategy] == nil then
-        game.print("ERROR: not implemented strategy: " .. planning_strategy)
-        return
-    end
-
-    local next_tech = Strategies[planning_strategy].NextTech(force)
-    if next_tech == nil then return end
+    if #force_plan < 10 then force_plan = current_strategy:make_plan(force) end
 
     -- The name is not explicit but it only add to the research queue/current research
-    force.add_research(next_tech)
+    force.add_research(table.remove(force_plan, 1))
 end
 Event.register(defines.events.on_research_finished, Planner.FinishedResearch)
 
