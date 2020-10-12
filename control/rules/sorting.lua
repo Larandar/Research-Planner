@@ -31,11 +31,9 @@ function DepthSorting:apply(force, technologies)
     end
 
     local function depth_sorting(a, b) return get_depth(a) < get_depth(b) end
+    table.sort(technologies, depth_sorting)
 
-    local techs = table.values(technologies)
-    table.sort(techs, depth_sorting)
-
-    return {}, techs
+    return {}, technologies
 end
 
-return {["depth-sorting"] = DepthSorting}
+return {["sorting.by-research-depth"] = DepthSorting}

@@ -5,14 +5,14 @@ local table = require("__stdlib__/stdlib/utils/table")
 local DefinedRules = {}
 
 DefinedRules = table.merge(DefinedRules, require("control/rules/sorting"))
--- DefinedRules = table.merge(DefinedRules, require("control/rules/filter"))
+DefinedRules = table.merge(DefinedRules, require("control/rules/filter"))
 
 -- Class in charge of evaluating the ruleset
-local PlanningStrategy = {ruleset = {{type = "depth-sorting"}}}
+local PlanningStrategy = {ruleset = {{type = "sorting.by-research-depth"}}}
 PlanningStrategy.__index = PlanningStrategy
 
 function PlanningStrategy:new(o)
-    o = o or {}
+    o = table.merge({future_plan = {}}, o or {})
     setmetatable(o, PlanningStrategy)
     o:hydrate_ruleset()
     return o
@@ -30,6 +30,8 @@ function PlanningStrategy:make_plan(force)
     -- We only need unresearched technologies as an array
     local technologies = table.filter(table.values(force.technologies),
                                       function(t) return not t.researched end)
+
+    -- We assemble the plan
     local plan = {}
 
     -- We evaluate all rules
@@ -42,9 +44,43 @@ function PlanningStrategy:make_plan(force)
     -- We add all remaining techs at the end of the plan
     table.each(technologies, function(x) table.insert(plan, x) end)
 
-    -- We don't need the researched
-    plan = table.filter(plan, function(t) return not t.researched end)
-    return plan
+    -- Save plan for the future
+    self.future_plan = table.map(plan, function(t) return t.name end)
+end
+
+function PlanningStrategy:get_next(force)
+    -- Re-evaluate plan if the plan seem a little short
+    if #self.future_plan < 10 then self:make_plan(force) end
+
+    -- We don't need the researched, so we update the plan with updated infos
+    self.future_plan = table.filter(self.future_plan, function(t)
+        return not self:research(force, t).researched
+    end)
+
+    -- We get the first researchable research
+    local next_research = table.find(self.future_plan, function(t)
+        local research = self:research(force, t)
+        return PlanningStrategy.is_researchable(research)
+    end)
+
+    return next_research
+end
+
+function PlanningStrategy:research(force, research_name)
+    return force.technologies[research_name]
+end
+
+function PlanningStrategy.is_researchable(tech)
+    -- Already researched tech can not be researched again
+    if tech.researched then return false end
+
+    -- If any of the prerequisites is not researched we can't start it
+    for _, prereq in pairs(tech["prerequisites"]) do
+        if not prereq.researched then return false end
+    end
+
+    -- Else it's possible
+    return true
 end
 
 return PlanningStrategy

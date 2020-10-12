@@ -7,7 +7,6 @@ local Planner = {}
 
 -- FIXME: ULTRA WIP
 local current_strategy = PlanningStrategy:new()
-local force_plan = {}
 
 function Planner.FinishedResearch(event)
     -- Only trigger on correct events
@@ -18,10 +17,8 @@ function Planner.FinishedResearch(event)
     local force = Game.get_force(event.research.force)
     if not force.current_research == nil then return end
 
-    if #force_plan < 10 then force_plan = current_strategy:make_plan(force) end
-
     -- The name is not explicit but it only add to the research queue/current research
-    force.add_research(table.remove(force_plan, 1))
+    force.add_research(current_strategy:get_next(force))
 end
 Event.register(defines.events.on_research_finished, Planner.FinishedResearch)
 
