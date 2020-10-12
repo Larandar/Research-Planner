@@ -1,1 +1,2 @@
-local Mod = require("control/mod")
+require("control/mod")
+require("control/cli")
