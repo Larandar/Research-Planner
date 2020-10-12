@@ -2,7 +2,7 @@
 local table = require("__stdlib__/stdlib/utils/table")
 local string_array = require('__stdlib__/stdlib/utils/classes/string_array')
 
--- Ban
+-- Ban research pack fron the planning
 local BanResearchPacks = {packs = {}}
 BanResearchPacks.__index = BanResearchPacks
 
@@ -26,4 +26,24 @@ function BanResearchPacks:apply(force, technologies)
     end)
 end
 
-return {["filter.ban-research-packs"] = BanResearchPacks}
+-- Ban research family from the planning
+local BanResearchTypes = {types = {}}
+BanResearchTypes.__index = BanResearchTypes
+
+function BanResearchTypes:new(o)
+    o = o or {}
+    setmetatable(o, self)
+    return o
+end
+
+function BanResearchTypes:apply(force, technologies)
+    return {}, table.filter(technologies, function(t)
+        return not table.any(self.types,
+                             function(r) return t.name:sub(0, #r) == r end)
+    end)
+end
+
+return {
+    ["filter.ban-research-packs"] = BanResearchPacks,
+    ["filter.ban-research-types"] = BanResearchTypes
+}
