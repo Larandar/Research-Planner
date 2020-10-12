@@ -1,3 +1,6 @@
+-- Standard Lib for factorio: https://afforess.github.io/Factorio-Stdlib/
+local table = require("__stdlib__/stdlib/utils/table")
+
 -- Starategy utils functions
 local StrategyUtils = require("control/strategies/utils")
 
@@ -5,9 +8,7 @@ local FirstFoundStrategy = {}
 
 -- The dummest idea ever, but it allow for quick testing
 function FirstFoundStrategy.NextTech(force)
-    for _, tech in pairs(force.technologies) do
-        if StrategyUtils.is_researchable(tech) then return tech end
-    end
+    return table.find(force.technologies, StrategyUtils.is_researchable)
 end
 
 return FirstFoundStrategy
