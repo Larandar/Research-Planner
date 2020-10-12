@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.0
+Date: 2020-10-12
+  Features:
+    - Added cheapest planning strategy in settings
+
+  Changes:
+    - Setting for first-found is now named first-found
+    - More descriptive settings
+---------------------------------------------------------------------------------------------------
 Version: 0.1.0
 Date: 2020-10-11
 
