@@ -13,6 +13,14 @@ This mod intent to enhance your research queue experience.
 - Runtime setting for trying the future planning strategy
   - First-found: get the first research found that is researchable
   - Cheapest: plan the research with cheapest combined crafting time
+- Hacky CLI to manipulate planning, example:
+```
+/research-planner clear
+/research-planner add sorting.by-cheapness
+/research-planner add filter.ban-research-types types=artillery-shell-speed,follower-robot-count
+/research-planner add filter.ban-research-packs packs=military
+/research-planner show
+```
 
 ## Planned features:
 
@@ -20,6 +28,7 @@ This mod intent to enhance your research queue experience.
 - Auto-add least expensive research
 - Production adaptive research?
 - Infinite research prioritization
+- Import/Export of settings
 
 ## Miscellaneous features
 

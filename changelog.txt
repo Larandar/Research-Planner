@@ -1,4 +1,18 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.0
+Date: 2020-10-12
+  Features:
+    - Now with a hacky CLI, see README for example
+    - Rules for skipping researchs: filter.ban-research-packs, filter.ban-research-types
+    - Rules for prioritizing: sorting.by-research-depth, sorting.by-cheapness, sorting.by-speed
+  Changes:
+    - Removed WIP setting
+    - The logic is now rule based, and can be easily extended in code
+  Info:
+    - More information about the rules will be available in the GUI, the CLI is a hack for testing
+      them, and getting fedback from beta-testers.
+
+---------------------------------------------------------------------------------------------------
 Version: 0.2.0
 Date: 2020-10-12
   Features:
