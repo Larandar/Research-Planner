@@ -5,12 +5,7 @@ local string_array = require('__stdlib__/stdlib/utils/classes/string_array')
 -- Ban research pack fron the planning
 local BanResearchPacks = {packs = {}}
 BanResearchPacks.__index = BanResearchPacks
-
-function BanResearchPacks:new(o)
-    o = o or {}
-    setmetatable(o, self)
-    return o
-end
+function BanResearchPacks:hydrate(o) setmetatable(o, self) end
 
 function BanResearchPacks:apply(force, technologies)
     -- Get all banned science-packs
@@ -29,12 +24,7 @@ end
 -- Ban research family from the planning
 local BanResearchTypes = {types = {}}
 BanResearchTypes.__index = BanResearchTypes
-
-function BanResearchTypes:new(o)
-    o = o or {}
-    setmetatable(o, self)
-    return o
-end
+function BanResearchTypes:hydrate(o) setmetatable(o, self) end
 
 function BanResearchTypes:apply(force, technologies)
     return {}, table.filter(technologies, function(t)

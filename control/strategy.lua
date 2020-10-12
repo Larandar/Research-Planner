@@ -13,16 +13,16 @@ PlanningStrategy.__index = PlanningStrategy
 
 function PlanningStrategy:new(o)
     o = table.merge({future_plan = {}}, o or {})
-    setmetatable(o, PlanningStrategy)
-    o:hydrate_ruleset()
+    self.hydrate(o)
     return o
 end
 
-function PlanningStrategy:hydrate_ruleset()
-    self.ruleset = table.map(self.ruleset, function(rule)
+function PlanningStrategy:hydrate()
+    setmetatable(self, PlanningStrategy)
+    self.ruleset = table.each(self.ruleset, function(rule)
         assert(DefinedRules[rule.type],
                "Undefined rule type: " .. tostring(rule.type))
-        return DefinedRules[rule.type]:new(rule)
+        DefinedRules[rule.type]:hydrate(rule)
     end)
 end
 

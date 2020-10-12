@@ -4,12 +4,7 @@ local table = require("__stdlib__/stdlib/utils/table")
 -- Sorting by depth of availability in the research tree
 local DepthSorting = {}
 DepthSorting.__index = DepthSorting
-
-function DepthSorting:new(o)
-    o = o or {}
-    setmetatable(o, self)
-    return o
-end
+function DepthSorting:hydrate(o) setmetatable(o, self) end
 
 function DepthSorting:apply(force, technologies)
     local depths = {}
@@ -50,12 +45,7 @@ local CheapnessSorting = {
     }
 }
 CheapnessSorting.__index = CheapnessSorting
-
-function CheapnessSorting:new(o)
-    o = o or {}
-    setmetatable(o, self)
-    return o
-end
+function CheapnessSorting:hydrate(o) setmetatable(o, self) end
 
 function CheapnessSorting:apply(force, technologies)
     table.sort(technologies,
@@ -81,12 +71,7 @@ end
 -- Sort by how quickly it is to research
 local ResearchSpeedSorting = {}
 ResearchSpeedSorting.__index = ResearchSpeedSorting
-
-function ResearchSpeedSorting:new(o)
-    o = o or {}
-    setmetatable(o, self)
-    return o
-end
+function ResearchSpeedSorting:hydrate(o) setmetatable(o, self) end
 
 function ResearchSpeedSorting:apply(force, technologies)
     table.sort(technologies,

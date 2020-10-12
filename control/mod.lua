@@ -7,14 +7,12 @@ local Planner = require("control/planner")
 
 local Mod = {}
 
-function Mod.OnInit(event)
-    Mod.ApplyStartupSettings()
-    Mod.ApplyRuntimeSettings()
+function Mod.InitMod(event)
+    Planner.Init(event)
+    Mod.ApplyRuntimeSettings(event)
 end
-Event.on_init(Mod.OnInit)
-
-function Mod.ApplyStartupSettings(event) end
-Event.on_configuration_changed(Mod.ApplyStartupSettings)
+Event.on_init(Mod.InitMod)
+Event.on_configuration_changed(Mod.InitMod)
 
 function Mod.ApplyRuntimeSettings(event)
     ResearchQueue.ApplyRuntimeSettings(event)
