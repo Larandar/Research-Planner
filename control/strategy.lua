@@ -45,12 +45,17 @@ function PlanningStrategy:make_plan(force)
     table.each(technologies, function(x) table.insert(plan, x) end)
 
     -- Save plan for the future
-    self.future_plan = table.map(plan, function(t) return t.name end)
+    return table.map(plan, function(t) return t.name end)
 end
 
 function PlanningStrategy:get_next(force)
     -- Re-evaluate plan if the plan seem a little short
-    if #self.future_plan < 10 then self:make_plan(force) end
+    if #self.future_plan < 10 then self.future_plan = self:make_plan(force) end
+
+    -- If we are doing infinite research we need to make new plan each time
+    if force.previous_research.research_unit_count_formula then
+        self.future_plan = self:make_plan(force)
+    end
 
     -- We don't need the researched, so we update the plan with updated infos
     self.future_plan = table.filter(self.future_plan, function(t)
