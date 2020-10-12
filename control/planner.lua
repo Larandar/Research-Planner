@@ -2,14 +2,10 @@
 local Event = require('__stdlib__/stdlib/event/event')
 local Game = require("__stdlib__/stdlib/game")
 
-local Planner = {}
+-- Stategies
+local Strategies = {["first-found"] = require("control/strategies/first-found")}
 
-function Planner.researchable(tech)
-    for _, prereq in pairs(tech["prerequisites"]) do
-        if not prereq.researched then return false end
-    end
-    return true
-end
+local Planner = {}
 
 function Planner.FinishedResearch(event)
     -- Only trigger on correct events
@@ -24,18 +20,16 @@ function Planner.FinishedResearch(event)
         settings.global["research-planner-wip-planning-strategy"].value
     if planning_strategy == "no" then return end
 
-    if planning_strategy == "first-one" then
-        for _, tech in pairs(force.technologies) do
-            if not tech.researched and Planner.researchable(tech) then
-                force.add_research(tech.name)
-                break
-            end
-        end
-    elseif planning_strategy == "cheapest" then
+    if Strategies[planning_strategy] == nil then
         game.print("ERROR: not implemented strategy: " .. planning_strategy)
-    else
-        game.print("ERROR: not implemented strategy: " .. planning_strategy)
+        return
     end
+
+    local next_tech = Strategies[planning_strategy].NextTech(force)
+    if next_tech == nil then return end
+
+    -- The name is not explicit but it only add to the research queue/current research
+    force.add_research(next_tech)
 end
 Event.register(defines.events.on_research_finished, Planner.FinishedResearch)
 

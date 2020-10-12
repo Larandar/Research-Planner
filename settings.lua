@@ -16,6 +16,6 @@ data:extend({
         name = "research-planner-wip-planning-strategy",
         setting_type = "runtime-global",
         default_value = "no",
-        allowed_values = {"no", "first-one", "cheapest"}
+        allowed_values = {"no", "first-found", "cheapest"}
     }
 })
