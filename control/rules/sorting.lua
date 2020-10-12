@@ -36,6 +36,7 @@ function DepthSorting:apply(force, technologies)
     return {}, technologies
 end
 
+-- Sort by how cheap a tech is to produce and research
 local CheapnessSorting = {
     -- By default it's the total raw time is minutes that is used
     pack_weights = {
@@ -77,7 +78,29 @@ function CheapnessSorting:cost_of(tech)
     return pack_cost * tech.research_unit_count
 end
 
+-- Sort by how quickly it is to research
+local ResearchSpeedSorting = {}
+ResearchSpeedSorting.__index = ResearchSpeedSorting
+
+function ResearchSpeedSorting:new(o)
+    o = o or {}
+    setmetatable(o, self)
+    return o
+end
+
+function ResearchSpeedSorting:apply(force, technologies)
+    table.sort(technologies,
+               function(a, b) return self:cost_of(a) < self:cost_of(b) end)
+    return {}, technologies
+end
+
+function ResearchSpeedSorting:cost_of(tech)
+    local cost = tech.research_unit_count * tech.research_unit_energy
+    return tech.research_unit_count * tech.research_unit_energy
+end
+
 return {
     ["sorting.by-research-depth"] = DepthSorting,
-    ["sorting.by-cheapness"] = CheapnessSorting
+    ["sorting.by-cheapness"] = CheapnessSorting,
+    ["sorting.by-speed"] = ResearchSpeedSorting
 }
