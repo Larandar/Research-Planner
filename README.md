@@ -8,6 +8,11 @@ This mod intent to enhance your research queue experience.
 
 - **NONE**
 
+## WIP features
+
+- Runtime setting for trying the future planning strategy
+  - First-found: get the first research found that is researchable
+
 ## Planned features:
 
 - Target a research and bee-line to it
@@ -15,13 +20,26 @@ This mod intent to enhance your research queue experience.
 - Production adaptive research?
 - Infinite research prioritization
 
+## Miscellaneous features
+
+- Setting for changing research queue setting of a map
+  - Include a setting for following map setting, which will emulate vanilla
+    behavior if research queue setting is `after-victory`
+- Notifications for finished researches
+  - Setting for which forces will see which finished researches
+  - Include a `taunt` option that tell your enemies you finished a research and
+    only the type of packs used 😈
+
 ## Compatibility:
 
-In theory, any research added should be compatible
+In theory, any research added should be compatible, including added science
+pack. But added packs may require tweaking the weight in implemented strategies,
+if you have recommendations please open an issue on github.
 
 ## Mod inspirations:
 
 - [Deadlock's Research Notification](https://mods.factorio.com/mod/DeadlockResearchNotifications)
 - [Auto Infinite Research](https://mods.factorio.com/mod/auto-infinite-research)
 - [Auto Research](https://mods.factorio.com/mod/auto-research)
-- [Rate Calculator](https://mods.factorio.com/mod/RateCalculator)
+- [Rate Calculator](https://mods.factorio.com/mod/RateCalculator) and in general
+  [all Raiguard GUI mods](https://mods.factorio.com/user/Raiguard)
