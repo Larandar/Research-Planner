@@ -1,2 +1,2 @@
-require("control/mod")
-require("control/cli")
+require("script/mod")
+require("script/cli")

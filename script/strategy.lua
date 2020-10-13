@@ -4,8 +4,8 @@ local table = require("__stdlib__/stdlib/utils/table")
 -- Load all defined rules
 local DefinedRules = {}
 
-DefinedRules = table.merge(DefinedRules, require("control/rules/sorting"))
-DefinedRules = table.merge(DefinedRules, require("control/rules/filter"))
+DefinedRules = table.merge(DefinedRules, require("script/rules/sorting"))
+DefinedRules = table.merge(DefinedRules, require("script/rules/filter"))
 
 -- Class in charge of evaluating the ruleset
 local PlanningStrategy = {ruleset = {{type = "sorting.by-research-depth"}}}

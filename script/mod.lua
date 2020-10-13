@@ -2,8 +2,8 @@
 local Event = require('__stdlib__/stdlib/event/event')
 
 -- Load the planner
-local ResearchQueue = require("control/queue")
-local Planner = require("control/planner")
+local ResearchQueue = require("script/queue")
+local Planner = require("script/planner")
 
 local Mod = {}
 

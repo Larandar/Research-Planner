@@ -3,7 +3,7 @@ local Event = require('__stdlib__/stdlib/event/event')
 local Game = require("__stdlib__/stdlib/game")
 local table = require("__stdlib__/stdlib/utils/table")
 
-local PlanningStrategy = require("control/strategy")
+local PlanningStrategy = require("script/strategy")
 local Planner = {}
 
 function Planner.Init(event)
