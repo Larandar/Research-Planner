@@ -58,10 +58,10 @@ function ResearchQueue.NotifyResearchFinished(event)
     local sharing_setting = settings.global["research-planner-sharing"].value
 
     local research_localised_name = research.localised_name
-    if research.research_unit_count_formula ~= nil then
+    if research.research_unit_count_formula ~= nil and research.level > 2 then
         research_localised_name = {
             "technology-name.technology-with-level", research.localised_name,
-            research.level
+            research.level - 1
         }
     end
 
