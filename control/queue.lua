@@ -57,18 +57,26 @@ function ResearchQueue.NotifyResearchFinished(event)
     local force = Game.get_force(event.research.force)
     local sharing_setting = settings.global["research-planner-sharing"].value
 
+    local research_localised_name = research.localised_name
+    if research.research_unit_count_formula ~= nil then
+        research_localised_name = {
+            "technology-name.technology-with-level", research.localised_name,
+            research.level
+        }
+    end
+
     for _, other_force in pairs(game.forces) do
         if force.name == other_force.name then
             other_force.print {
                 "messages.research-finished-self", force.name, research.name,
-                research.localised_name
+                research_localised_name
             }
 
         elseif force.get_friend(other_force) then
             if not sharing_setting == "no" then
                 other_force.print {
                     "messages.research-finished-friend", force.name,
-                    research.name, research.localised_name
+                    research.name, research_localised_name
                 }
             end
 
@@ -76,7 +84,7 @@ function ResearchQueue.NotifyResearchFinished(event)
             if sharing_setting == "always" then
                 other_force.print {
                     "messages.research-finished-enemy", force.name,
-                    research.name, research.localised_name
+                    research.name, research_localised_name
                 }
             elseif sharing_setting == "secret-to-enemies" then
                 local ingredients = research.research_unit_ingredients
