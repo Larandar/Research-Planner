@@ -1,5 +1,6 @@
--- Standard Lib for factorio: https://afforess.github.io/Factorio-Stdlib/
-local table = require("__stdlib__/stdlib/utils/table")
+-- Factorio-Lib: https://factoriolib.github.io/flib/index.html
+local table = require("__flib__.table")
+local math = require("__flib__.math")
 
 -- Sorting by depth of availability in the research tree
 local DepthSorting = {}
@@ -7,28 +8,37 @@ DepthSorting.__index = DepthSorting
 function DepthSorting:hydrate(o) setmetatable(o, self) end
 
 function DepthSorting:apply(force, technologies)
+    table.sort(technologies, self:compare())
+    return {}, technologies
+end
+
+-- Generate a comparaison function
+function DepthSorting:compare()
+    -- Local depth mapping
     local depths = {}
 
-    local function get_depth(tech)
+    -- We need to ignore the third argument of table.reduce
+    local function max(a, b) return math.max(a, b) end
+
+    -- Compute depth of a tech, using cache to not go twice over a tech tree
+    local function depth(tech)
         -- Recursion end
-        if table.count_keys(tech.prerequisites) == 0 then return 1 end
+        if #tech.prerequisites == 0 then return 1 end
         if tech.researched then return 1 end
 
         -- Only compute recompute non cached depths
         if depths[tech.name] == nil then
             -- Recursively use the max of the prerequisites
-            local prereq_depths = table.map(tech.prerequisites, get_depth)
-            prereq_depths = table.values(prereq_depths)
-            depths[tech.name] = 1 + (table.max(prereq_depths) or 0)
+            local prereq_depths = table.map(tech.prerequisites, depth)
+            local prereq_max = table.reduce(prereq_depths, max, 1)
+            -- We add a level for depth
+            depths[tech.name] = prereq_max + 1
         end
 
         return depths[tech.name]
     end
 
-    local function depth_sorting(a, b) return get_depth(a) < get_depth(b) end
-    table.sort(technologies, depth_sorting)
-
-    return {}, technologies
+    return function(a, b) return depth(a) < depth(b) end
 end
 
 -- Sort by how cheap a tech is to produce and research
@@ -48,24 +58,31 @@ CheapnessSorting.__index = CheapnessSorting
 function CheapnessSorting:hydrate(o) setmetatable(o, self) end
 
 function CheapnessSorting:apply(force, technologies)
-    table.sort(technologies,
-               function(a, b) return self:cost_of(a) < self:cost_of(b) end)
+    table.sort(technologies, self:compare())
     return {}, technologies
 end
 
-function CheapnessSorting:cost_of(tech)
-    local pack_cost = 0
-    for _, i in ipairs(tech.research_unit_ingredients) do
+function CheapnessSorting:compare()
+    -- Ingredient cost
+    local function ingredients_cost(total_cost, i)
         if self.pack_weights[i.name] then
-            pack_cost = pack_cost + self.pack_weights[i.name]
+            return total_cost + self.pack_weights[i.name]
         else
             -- This is a warning
             print("Could not find pack weight (using default: 10):" .. i.name)
             print("You can open an github issue to provide a better value.")
-            pack_cost = pack_cost + 10
+            return total_cost + 10
         end
     end
-    return pack_cost * tech.research_unit_count
+
+    -- Cost function
+    local function cost_of(tech)
+        local total_cost = table.reduce(tech.research_unit_ingredients,
+                                        ingredients_cost, 0)
+        return tech.research_unit_count * total_cost
+    end
+
+    return function(a, b) return cost_of(a) < cost_of(b) end
 end
 
 -- Sort by how quickly it is to research
@@ -74,14 +91,17 @@ ResearchSpeedSorting.__index = ResearchSpeedSorting
 function ResearchSpeedSorting:hydrate(o) setmetatable(o, self) end
 
 function ResearchSpeedSorting:apply(force, technologies)
-    table.sort(technologies,
-               function(a, b) return self:cost_of(a) < self:cost_of(b) end)
+    table.sort(technologies, self:compare())
     return {}, technologies
 end
 
-function ResearchSpeedSorting:cost_of(tech)
-    local cost = tech.research_unit_count * tech.research_unit_energy
-    return tech.research_unit_count * tech.research_unit_energy
+function ResearchSpeedSorting:compare()
+    -- Cost function
+    local function speed_of(tech)
+        return tech.research_unit_count * tech.research_unit_energy
+    end
+
+    return function(a, b) return speed_of(a) < speed_of(b) end
 end
 
 return {
