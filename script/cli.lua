@@ -1,33 +1,41 @@
--- Standard Lib for factorio: https://afforess.github.io/Factorio-Stdlib/
-local string = require('__stdlib__/stdlib/utils/string')
-local table = require('__stdlib__/stdlib/utils/table')
+-- Factorio-Lib: https://factoriolib.github.io/flib/index.html
+local table = require("__flib__.table")
 
+-- CLI module
 local CLI = {}
 
 function CLI.exec(event)
     local calling_player = game.players[event.player_index]
     local force = calling_player.force
 
-    local parameters = string.split(event.parameter, " ")
-    local method = table.remove(parameters, 1)
+    local invoked_command = event.parameter
+    local method = invoked_command:match("^%s*([%w-]+%s*)") or "help"
 
-    if CLI[method] then
-        CLI[method](calling_player, force, parameters)
-    else
-        calling_player.print {"commands-help.research-planner"}
-    end
+    (CLI[method:match("([%w-]+)")] or CLI.help)(calling_player, force,
+                                                event.parameter:sub(#method + 1))
+end
+
+function CLI.help(player, force, parameters)
+    player.print {"commands-help.research-planner"}
 end
 
 function CLI.show(player, force, parameters)
-    table.each(global.research_planner[force.name].ruleset,
-               function(r) player.print(serpent.line(r)) end)
+    table.for_each(global.research_planner[force.name].ruleset,
+                   function(r) player.print(serpent.line(r)) end)
 end
 
+-- /research-planner add type [option-lua-table]
 function CLI.add(player, force, parameters)
-    local rule = {type = table.remove(parameters, 1)}
-    for _, p in ipairs(parameters) do
-        p = string.split(p, "=")
-        rule[p[1]] = string.split(p[2], ",")
+    -- Separate the
+    local rule = {type = parameters:match("^%s*([%w.-]+)%s*")}
+    local rule_args = parameters:match("^%s*[%w.-]+%s+(.+)$")
+    if rule_args then
+        local ok, res = serpent.load(rule_args)
+        if ok and type(res) == "table" then
+            rule = table.deep_merge {rule, res}
+        else
+            return CLI.help(player, force, parameters)
+        end
     end
 
     table.insert(global.research_planner[force.name].ruleset, rule)
@@ -41,3 +49,5 @@ end
 
 commands.add_command("research-planner", {"commands-help.research-planner"},
                      CLI.exec)
+
+return CLI

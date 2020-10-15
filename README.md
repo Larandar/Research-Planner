@@ -17,8 +17,8 @@ This mod intent to enhance your research queue experience.
 ```
 /research-planner clear
 /research-planner add sorting.by-cheapness
-/research-planner add filter.ban-research-types types=artillery-shell-speed,follower-robot-count
-/research-planner add filter.ban-research-packs packs=military
+/research-planner add filter.ban-research-types {types={"artillery-shell-speed","follower-robot-count"}
+/research-planner add filter.ban-research-packs {packs={"military"}}
 /research-planner show
 ```
 
