@@ -34,10 +34,9 @@
             "adjustMods": {
                 "debugadapter": true,
                 // Can't test it else
-                "stdlib": true,
+                "flib": true,
                 "Research-Planner": true,
                 // Editor Extensions is really great for testing
-                "flib": true,
                 "EditorExtensions": true,
             },
             "disableExtraMods": true

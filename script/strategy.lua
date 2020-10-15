@@ -1,34 +1,39 @@
--- Standard Lib for factorio: https://afforess.github.io/Factorio-Stdlib/
-local table = require("__stdlib__/stdlib/utils/table")
+-- Factorio-Lib: https://factoriolib.github.io/flib/index.html
+local table = require("__flib__.table")
+
+-- Missing find function from flib...
+function table.find(tbl, condition)
+    for k, v in pairs(tbl) do if condition(v, k, tbl) then return v end end
+    return nil
+end
 
 -- Load all defined rules
-local DefinedRules = {}
+local sorting_rules = require("script.rules.sorting")
+local filtering_rules = require("script.rules.filter")
 
-DefinedRules = table.merge(DefinedRules, require("script/rules/sorting"))
-DefinedRules = table.merge(DefinedRules, require("script/rules/filter"))
+local DefinedRules = table.deep_merge {{}, sorting_rules, filtering_rules}
 
 -- Class in charge of evaluating the ruleset
 local PlanningStrategy = {ruleset = {{type = "sorting.by-research-depth"}}}
 PlanningStrategy.__index = PlanningStrategy
 
 function PlanningStrategy:new(o)
-    o = table.merge({future_plan = {}}, o or {})
+    o = table.deep_merge {{future_plan = {}}, o or {}}
     self.hydrate(o)
     return o
 end
 
 function PlanningStrategy:hydrate()
     setmetatable(self, PlanningStrategy)
-    self.ruleset = table.each(self.ruleset, function(rule)
-        assert(DefinedRules[rule.type],
-               "Undefined rule type: " .. tostring(rule.type))
+    table.for_each(self.ruleset, function(rule)
+        assert(DefinedRules[rule.type], "Undefined rule type: %s" .. rule.type)
         DefinedRules[rule.type]:hydrate(rule)
     end)
 end
 
 function PlanningStrategy:make_plan(force)
     -- We only need unresearched technologies as an array
-    local technologies = table.filter(table.values(force.technologies),
+    local technologies = table.filter(force.technologies,
                                       function(t) return not t.researched end)
 
     -- We assemble the plan
@@ -37,12 +42,12 @@ function PlanningStrategy:make_plan(force)
     -- We evaluate all rules
     for _, rule in pairs(self.ruleset) do
         local selection, remaining_techs = rule:apply(force, technologies)
-        table.each(selection, function(x) table.insert(plan, x) end)
+        table.for_each(selection, function(x) table.insert(plan, x) end)
         technologies = remaining_techs
     end
 
     -- We add all remaining techs at the end of the plan
-    table.each(technologies, function(x) table.insert(plan, x) end)
+    table.for_each(technologies, function(x) table.insert(plan, x) end)
 
     -- Save plan for the future
     return table.map(plan, function(t) return t.name end)

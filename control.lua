@@ -1,2 +1,2 @@
-require("script/mod")
-require("script/cli")
+require("script.mod")
+require("script.cli")

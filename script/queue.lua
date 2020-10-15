@@ -1,7 +1,3 @@
--- Standard Lib for factorio: https://afforess.github.io/Factorio-Stdlib/
-local Event = require('__stdlib__/stdlib/event/event')
-local Game = require('__stdlib__/stdlib/game')
-
 local ResearchQueue = {}
 
 function ResearchQueue.ApplyRuntimeSettings(event)
@@ -31,30 +27,20 @@ function ResearchQueue.ApplyRuntimeSettings(event)
 end
 
 function ResearchQueue.DefaultUnlockBehaviour(event)
-    -- Only trigger on correct events
-    if not (event and event.define_name == "on_rocket_launched") then return end
-
     -- We only need to check when the map settings dificulty settings aggree
     if not (settings.global["research-planner-enable-queue"].value ==
         "keep-map-settings" and game.difficulty_settings.research_queue_setting ==
         "after-victory") then return end
 
     -- Enable the research queue now
-    local force = Game.get_force(event.rocket.force) or
-                      Game.get_force(event.rocket_silo.force)
+    local force = event.rocket.force or event.rocket_silo.force
     force.research_queue_enabled = true
 end
-Event.register(defines.events.on_rocket_launched,
-               ResearchQueue.DefaultUnlockBehaviour)
 
 function ResearchQueue.NotifyResearchFinished(event)
-    -- Only trigger on correct events
-    if not (event and event.define_name == "on_research_finished") then
-        return
-    end
-
+    -- Get information from the event
     local research = event.research
-    local force = Game.get_force(event.research.force)
+    local force = event.research.force
     local sharing_setting = settings.global["research-planner-sharing"].value
 
     local research_localised_name = research.localised_name
@@ -96,7 +82,5 @@ function ResearchQueue.NotifyResearchFinished(event)
         end
     end
 end
-Event.register(defines.events.on_research_finished,
-               ResearchQueue.NotifyResearchFinished)
 
 return ResearchQueue
